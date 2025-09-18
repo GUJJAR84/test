@@ -20,48 +20,94 @@ const mockTourists: Tourist[] = [
   {
     id: '1',
     digitalId: 'DTID-2024-NE-001',
-    name: 'Sarah Johnson',
-    phone: '+1-555-0123',
-    nationality: 'USA',
+    name: 'Aman Kumar',
+    phone: '+91-9876543210',
+    nationality: 'India',
     kycHash: 'hash_abc123',
     itinerary: {
-      startDate: new Date('2024-12-15'),
-      endDate: new Date('2024-12-22'),
+      startDate: new Date('2025-09-23'),
+      endDate: new Date('2025-10-03'),
       plannedRoutes: ['Guwahati', 'Shillong', 'Cherrapunji'],
       destinations: ['Meghalaya', 'Assam'],
       routeHash: 'route_hash_xyz'
     },
     emergencyContacts: [
-      { name: 'John Johnson', phone: '+1-555-0124', relationship: 'Spouse', encryptedDetails: 'enc_contact1' }
+      { name: 'Sunita Kumar', phone: '+91-9876543211', relationship: 'Mother', encryptedDetails: 'enc_contact1' }
     ],
     currentLocation: { latitude: 25.5788, longitude: 91.8933, accuracy: 10, timestamp: new Date() },
     safetyScore: 85,
     status: 'safe',
-    createdAt: new Date('2024-12-15'),
-    expiryDate: new Date('2024-12-22')
+    createdAt: new Date(),
+    expiryDate: new Date('2025-10-03')
   },
   {
     id: '2',
     digitalId: 'DTID-2024-NE-002',
-    name: 'Hiroshi Tanaka',
-    phone: '+81-90-1234-5678',
-    nationality: 'Japan',
+    name: 'Priya Singh',
+    phone: '+91-9876543220',
+    nationality: 'India',
     kycHash: 'hash_def456',
     itinerary: {
-      startDate: new Date('2024-12-14'),
-      endDate: new Date('2024-12-21'),
+      startDate: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000), // 5 days from now
+      endDate: new Date(Date.now() + 12 * 24 * 60 * 60 * 1000), // 12 days from now
       plannedRoutes: ['Kohima', 'Dimapur', 'Imphal'],
       destinations: ['Nagaland', 'Manipur'],
       routeHash: 'route_hash_abc'
     },
     emergencyContacts: [
-      { name: 'Yuki Tanaka', phone: '+81-90-1234-5679', relationship: 'Sister', encryptedDetails: 'enc_contact2' }
+      { name: 'Raj Singh', phone: '+91-9876543221', relationship: 'Father', encryptedDetails: 'enc_contact2' }
     ],
     currentLocation: { latitude: 25.6751, longitude: 94.1086, accuracy: 15, timestamp: new Date() },
     safetyScore: 45,
     status: 'caution',
-    createdAt: new Date('2024-12-14'),
-    expiryDate: new Date('2024-12-21')
+    createdAt: new Date(),
+    expiryDate: new Date(Date.now() + 12 * 24 * 60 * 60 * 1000)
+  },
+  {
+    id: '3',
+    digitalId: 'DTID-2024-NE-003',
+    name: 'Vikram Patel',
+    phone: '+91-9876543230',
+    nationality: 'India',
+    kycHash: 'hash_ghi789',
+    itinerary: {
+      startDate: new Date(Date.now() + 10 * 24 * 60 * 60 * 1000), // 10 days from now
+      endDate: new Date(Date.now() + 17 * 24 * 60 * 60 * 1000), // 17 days from now
+      plannedRoutes: ['Aizawl', 'Lunglei', 'Champhai'],
+      destinations: ['Mizoram'],
+      routeHash: 'route_hash_def'
+    },
+    emergencyContacts: [
+      { name: 'Meera Patel', phone: '+91-9876543231', relationship: 'Wife', encryptedDetails: 'enc_contact3' }
+    ],
+    currentLocation: { latitude: 23.7271, longitude: 92.7176, accuracy: 12, timestamp: new Date() },
+    safetyScore: 92,
+    status: 'safe',
+    createdAt: new Date(),
+    expiryDate: new Date(Date.now() + 17 * 24 * 60 * 60 * 1000)
+  },
+  {
+    id: '4',
+    digitalId: 'DTID-2024-NE-004',
+    name: 'Rohit Sharma',
+    phone: '+91-9876543240',
+    nationality: 'India',
+    kycHash: 'hash_jkl012',
+    itinerary: {
+      startDate: new Date('2025-07-01'),
+      endDate: new Date('2025-07-10'),
+      plannedRoutes: ['Itanagar', 'Ziro', 'Tawang'],
+      destinations: ['Arunachal Pradesh'],
+      routeHash: 'route_hash_ghi'
+    },
+    emergencyContacts: [
+      { name: 'Kavita Sharma', phone: '+91-9876543241', relationship: 'Sister', encryptedDetails: 'enc_contact4' }
+    ],
+    currentLocation: { latitude: 27.0844, longitude: 93.6053, accuracy: 8, timestamp: new Date('2025-07-10') },
+    safetyScore: 100,
+    status: 'safe',
+    createdAt: new Date('2025-07-01'),
+    expiryDate: new Date('2025-07-10')
   }
 ];
 
@@ -101,9 +147,9 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
   const [incidents, setIncidents] = useState<Incident[]>(mockIncidents);
   const [geoFences] = useState<GeoFence[]>(mockGeoFences);
   const [safetyMetrics, setSafetyMetrics] = useState<SafetyMetrics>({
-    totalTourists: 2,
-    activeTourists: 2,
-    safeCount: 1,
+    totalTourists: 4,
+    activeTourists: 3,
+    safeCount: 2,
     cautionCount: 1,
     dangerCount: 0,
     incidentsToday: 1,

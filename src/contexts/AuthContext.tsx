@@ -13,8 +13,29 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 const mockUsers: User[] = [
   {
     id: '1',
-    name: 'Rajesh Sharma',
-    email: 'tourist@demo.com',
+    name: 'Aman Kumar',
+    email: 'aman.kumar@demo.com',
+    role: 'tourist',
+    permissions: ['view_profile', 'panic_button', 'location_sharing']
+  },
+  {
+    id: '5',
+    name: 'Priya Singh',
+    email: 'tourist1@demo.com',
+    role: 'tourist',
+    permissions: ['view_profile', 'panic_button', 'location_sharing']
+  },
+  {
+    id: '6',
+    name: 'Vikram Patel',
+    email: 'tourist2@demo.com',
+    role: 'tourist',
+    permissions: ['view_profile', 'panic_button', 'location_sharing']
+  },
+  {
+    id: '7',
+    name: 'Rohit Sharma',
+    email: 'rohit.sharma@demo.com',
     role: 'tourist',
     permissions: ['view_profile', 'panic_button', 'location_sharing']
   },
@@ -62,7 +83,19 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     // Mock authentication
     const foundUser = mockUsers.find(u => u.email === email && u.role === role);
     
-    if (foundUser && password === 'demo123') {
+    // Check password based on user
+    let validPassword = false;
+    if (foundUser?.email === 'aman.kumar@demo.com' && password === 'Aman@123') {
+      validPassword = true;
+    } else if (foundUser?.email === 'rohit.sharma@demo.com' && password === 'Tourist@123') {
+      validPassword = true;
+    } else if (foundUser?.email.includes('tourist') && password === 'Tourist@123') {
+      validPassword = true;
+    } else if (foundUser && password === 'demo123') {
+      validPassword = true;
+    }
+    
+    if (foundUser && validPassword) {
       setUser(foundUser);
       setIsAuthenticated(true);
       localStorage.setItem('auth_user', JSON.stringify(foundUser));
