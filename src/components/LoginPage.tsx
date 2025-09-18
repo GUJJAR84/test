@@ -43,7 +43,7 @@ export function LoginPage() {
   ];
 
   const demoCredentials = {
-    tourist: 'aman.kumar@demo.com',
+    tourist: 'aman@tourist.com',
     police: 'police@demo.com',
     tourism_dept: 'tourism@demo.com',
     admin: 'admin@demo.com'
@@ -193,7 +193,7 @@ export function LoginPage() {
             <div className="mt-6 text-center">
               <div className="text-sm text-gray-600 bg-gray-50 p-3 rounded-lg">
                 <p className="font-medium mb-1">Demo Credentials:</p>
-                <p>Tourist (Aman Kumar): aman.kumar@demo.com / Aman@123</p>
+                <p>Tourist (Aman Kumar): aman@tourist.com / Aman@123</p>
                 <p>Other roles: Auto-filled email / demo123</p>
               </div>
             </div>

@@ -14,28 +14,28 @@ const mockUsers: User[] = [
   {
     id: '1',
     name: 'Aman Kumar',
-    email: 'aman.kumar@demo.com',
+    email: 'aman@tourist.com',
     role: 'tourist',
     permissions: ['view_profile', 'panic_button', 'location_sharing']
   },
   {
     id: '5',
     name: 'Priya Singh',
-    email: 'tourist1@demo.com',
+    email: 'priya@tourist.com',
     role: 'tourist',
     permissions: ['view_profile', 'panic_button', 'location_sharing']
   },
   {
     id: '6',
     name: 'Vikram Patel',
-    email: 'tourist2@demo.com',
+    email: 'vikram@tourist.com',
     role: 'tourist',
     permissions: ['view_profile', 'panic_button', 'location_sharing']
   },
   {
     id: '7',
     name: 'Rohit Sharma',
-    email: 'rohit.sharma@demo.com',
+    email: 'rohit@tourist.com',
     role: 'tourist',
     permissions: ['view_profile', 'panic_button', 'location_sharing']
   },
@@ -85,11 +85,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     
     // Check password based on user
     let validPassword = false;
-    if (foundUser?.email === 'aman.kumar@demo.com' && password === 'Aman@123') {
+    if (foundUser?.email === 'aman@tourist.com' && password === 'Aman@123') {
       validPassword = true;
-    } else if (foundUser?.email === 'rohit.sharma@demo.com' && password === 'Tourist@123') {
+    } else if (foundUser?.email === 'rohit@tourist.com' && password === 'Tourist@123') {
       validPassword = true;
-    } else if (foundUser?.email.includes('tourist') && password === 'Tourist@123') {
+    } else if (foundUser?.email.includes('@tourist.com') && password === 'Tourist@123') {
       validPassword = true;
     } else if (foundUser && password === 'demo123') {
       validPassword = true;
