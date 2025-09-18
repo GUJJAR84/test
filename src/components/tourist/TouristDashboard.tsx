@@ -11,7 +11,7 @@ export function TouristDashboard() {
   const [isPanicActive, setIsPanicActive] = useState(false);
 
   // Find current tourist data
-  const currentTourist = tourists.find(t => t.name === user?.name) || tourists[0];
+  const currentTourist = tourists.find(t => t.name === user?.name) || tourists.find(t => t.name === 'Aman Kumar') || tourists[0];
 
   useEffect(() => {
     // Simulate getting current location

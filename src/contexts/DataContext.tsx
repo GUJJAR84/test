@@ -7,10 +7,15 @@ interface DataContextType {
   geoFences: GeoFence[];
   safetyMetrics: SafetyMetrics;
   addTourist: (tourist: Omit<Tourist, 'id' | 'createdAt'>) => string;
+  updateTourist: (id: string, updates: Partial<Tourist>) => void;
+  deleteTourist: (id: string) => void;
   updateTouristLocation: (id: string, location: Location) => void;
   createIncident: (incident: Omit<Incident, 'id' | 'createdAt' | 'updatedAt'>) => void;
   updateIncident: (id: string, updates: Partial<Incident>) => void;
   triggerPanicButton: (touristId: string, location: Location) => void;
+  addGeoFence: (geoFence: Omit<GeoFence, 'id'>) => string;
+  updateGeoFence: (id: string, updates: Partial<GeoFence>) => void;
+  deleteGeoFence: (id: string) => void;
 }
 
 const DataContext = createContext<DataContextType | undefined>(undefined);
@@ -207,6 +212,18 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
     return id;
   };
 
+  const updateTourist = (id: string, updates: Partial<Tourist>) => {
+    setTourists(prev => prev.map(tourist =>
+      tourist.id === id
+        ? { ...tourist, ...updates }
+        : tourist
+    ));
+  };
+
+  const deleteTourist = (id: string) => {
+    setTourists(prev => prev.filter(tourist => tourist.id !== id));
+  };
+
   const updateTouristLocation = (id: string, location: Location) => {
     setTourists(prev => prev.map(tourist => 
       tourist.id === id 
@@ -231,6 +248,28 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
         ? { ...incident, ...updates, updatedAt: new Date() }
         : incident
     ));
+  };
+
+  const addGeoFence = (geoFenceData: Omit<GeoFence, 'id'>): string => {
+    const id = Date.now().toString();
+    const newGeoFence: GeoFence = {
+      ...geoFenceData,
+      id
+    };
+    setGeoFences(prev => [...prev, newGeoFence]);
+    return id;
+  };
+
+  const updateGeoFence = (id: string, updates: Partial<GeoFence>) => {
+    setGeoFences(prev => prev.map(fence =>
+      fence.id === id
+        ? { ...fence, ...updates }
+        : fence
+    ));
+  };
+
+  const deleteGeoFence = (id: string) => {
+    setGeoFences(prev => prev.filter(fence => fence.id !== id));
   };
 
   const triggerPanicButton = (touristId: string, location: Location) => {
@@ -259,10 +298,15 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
       geoFences,
       safetyMetrics,
       addTourist,
+      updateTourist,
+      deleteTourist,
       updateTouristLocation,
       createIncident,
       updateIncident,
-      triggerPanicButton
+      triggerPanicButton,
+      addGeoFence,
+      updateGeoFence,
+      deleteGeoFence
     }}>
       {children}
     </DataContext.Provider>

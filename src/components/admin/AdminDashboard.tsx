@@ -6,12 +6,15 @@ import { Tourist, GeoFence, Location } from '../../types';
 
 export function AdminDashboard() {
   const { user } = useAuth();
-  const { tourists, geoFences, addTourist } = useData();
+  const { tourists, geoFences, addTourist, updateTourist, deleteTourist } = useData();
   const [activeTab, setActiveTab] = useState<'tourists' | 'geofences' | 'system'>('tourists');
   const [showAddTourist, setShowAddTourist] = useState(false);
   const [showAddGeofence, setShowAddGeofence] = useState(false);
+  const [showEditTourist, setShowEditTourist] = useState(false);
+  const [editingTourist, setEditingTourist] = useState<Tourist | null>(null);
   const [newTourist, setNewTourist] = useState({
     name: '',
+    email: '',
     phone: '',
     nationality: '',
     startDate: '',
@@ -58,6 +61,7 @@ export function AdminDashboard() {
     setShowAddTourist(false);
     setNewTourist({
       name: '',
+      email: '',
       phone: '',
       nationality: '',
       startDate: '',
@@ -68,6 +72,36 @@ export function AdminDashboard() {
       emergencyContactPhone: '',
       emergencyContactRelation: ''
     });
+  };
+
+  const handleEditTourist = (tourist: Tourist) => {
+    setEditingTourist(tourist);
+    setNewTourist({
+      name: tourist.name,
+      email: '', // We'll need to get this from auth context
+      phone: tourist.phone,
+      nationality: tourist.nationality,
+      startDate: tourist.itinerary.startDate.toISOString().split('T')[0],
+      endDate: tourist.itinerary.endDate.toISOString().split('T')[0],
+      destinations: tourist.itinerary.destinations.join(', '),
+      plannedRoutes: tourist.itinerary.plannedRoutes.join(', '),
+      emergencyContactName: tourist.emergencyContacts[0]?.name || '',
+      emergencyContactPhone: tourist.emergencyContacts[0]?.phone || '',
+      emergencyContactRelation: tourist.emergencyContacts[0]?.relationship || ''
+    });
+    setShowEditTourist(true);
+  };
+
+  const handleDeleteTourist = (touristId: string) => {
+    if (confirm('Are you sure you want to delete this tourist? This action cannot be undone.')) {
+      deleteTourist(touristId);
+    }
+  };
+
+  const handleSaveEditTourist = () => {
+    // Implementation for updating tourist
+    setShowEditTourist(false);
+    setEditingTourist(null);
   };
 
   const tabs = [
@@ -128,43 +162,77 @@ export function AdminDashboard() {
                   <th className="text-left py-3 px-2 font-medium text-gray-700">Digital ID</th>
                   <th className="text-left py-3 px-2 font-medium text-gray-700">Name</th>
                   <th className="text-left py-3 px-2 font-medium text-gray-700">Nationality</th>
+                  <th className="text-left py-3 px-2 font-medium text-gray-700">Journey Status</th>
                   <th className="text-left py-3 px-2 font-medium text-gray-700">Status</th>
                   <th className="text-left py-3 px-2 font-medium text-gray-700">Safety Score</th>
-                  <th className="text-left py-3 px-2 font-medium text-gray-700">Expiry</th>
+                  <th className="text-left py-3 px-2 font-medium text-gray-700">Journey Dates</th>
                   <th className="text-left py-3 px-2 font-medium text-gray-700">Actions</th>
                 </tr>
               </thead>
               <tbody>
-                {tourists.map((tourist) => (
-                  <tr key={tourist.id} className="border-b hover:bg-gray-50">
-                    <td className="py-3 px-2 font-mono text-sm">{tourist.digitalId}</td>
-                    <td className="py-3 px-2 font-medium">{tourist.name}</td>
-                    <td className="py-3 px-2">{tourist.nationality}</td>
-                    <td className="py-3 px-2">
-                      <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                        tourist.status === 'safe' 
-                          ? 'bg-green-100 text-green-800'
-                          : tourist.status === 'caution'
-                          ? 'bg-yellow-100 text-yellow-800'
-                          : 'bg-red-100 text-red-800'
-                      }`}>
-                        {tourist.status.toUpperCase()}
-                      </span>
-                    </td>
-                    <td className="py-3 px-2">{tourist.safetyScore}/100</td>
-                    <td className="py-3 px-2">{tourist.expiryDate.toLocaleDateString()}</td>
-                    <td className="py-3 px-2">
-                      <div className="flex space-x-2">
-                        <button className="text-blue-600 hover:text-blue-700">
-                          <Edit className="h-4 w-4" />
-                        </button>
-                        <button className="text-red-600 hover:text-red-700">
-                          <Trash2 className="h-4 w-4" />
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
+                {tourists.map((tourist) => {
+                  const now = new Date();
+                  const isCompleted = now > tourist.expiryDate;
+                  const isUpcoming = now < tourist.itinerary.startDate;
+                  const isActive = !isCompleted && !isUpcoming;
+                  
+                  return (
+                    <tr key={tourist.id} className="border-b hover:bg-gray-50">
+                      <td className="py-3 px-2 font-mono text-sm">{tourist.digitalId}</td>
+                      <td className="py-3 px-2 font-medium">
+                        {tourist.name}
+                        {tourist.name === 'Aman Kumar' && (
+                          <span className="ml-2 px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded-full">
+                            Primary
+                          </span>
+                        )}
+                      </td>
+                      <td className="py-3 px-2">{tourist.nationality}</td>
+                      <td className="py-3 px-2">
+                        <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                          isCompleted 
+                            ? 'bg-gray-100 text-gray-800'
+                            : isUpcoming
+                            ? 'bg-blue-100 text-blue-800'
+                            : 'bg-green-100 text-green-800'
+                        }`}>
+                          {isCompleted ? 'COMPLETED' : isUpcoming ? 'UPCOMING' : 'ACTIVE'}
+                        </span>
+                      </td>
+                      <td className="py-3 px-2">
+                        <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                          tourist.status === 'safe' 
+                            ? 'bg-green-100 text-green-800'
+                            : tourist.status === 'caution'
+                            ? 'bg-yellow-100 text-yellow-800'
+                            : 'bg-red-100 text-red-800'
+                        }`}>
+                          {tourist.status.toUpperCase()}
+                        </span>
+                      </td>
+                      <td className="py-3 px-2">{tourist.safetyScore}/100</td>
+                      <td className="py-3 px-2 text-sm">
+                        <div>{tourist.itinerary.startDate.toLocaleDateString()}</div>
+                        <div className="text-gray-500">to {tourist.expiryDate.toLocaleDateString()}</div>
+                      </td>
+                      <td className="py-3 px-2">
+                        <div className="flex space-x-2">
+                          <button 
+                            onClick={() => handleEditTourist(tourist)}
+                            className="text-blue-600 hover:text-blue-700">
+                            <Edit className="h-4 w-4" />
+                          </button>
+                          <button 
+                            onClick={() => handleDeleteTourist(tourist.id)}
+                            className="text-red-600 hover:text-red-700"
+                            disabled={tourist.name === 'Aman Kumar'}>
+                            <Trash2 className="h-4 w-4" />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           </div>
@@ -323,6 +391,16 @@ export function AdminDashboard() {
                   />
                 </div>
                 <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                  <input
+                    type="email"
+                    value={newTourist.email}
+                    onChange={(e) => setNewTourist({...newTourist, email: e.target.value})}
+                    placeholder="tourist@demo.com"
+                    className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
+                  />
+                </div>
+                <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Phone</label>
                   <input
                     type="tel"
@@ -346,6 +424,7 @@ export function AdminDashboard() {
                     type="date"
                     value={newTourist.startDate}
                     onChange={(e) => setNewTourist({...newTourist, startDate: e.target.value})}
+                    min={new Date().toISOString().split('T')[0]}
                     className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
                   />
                 </div>
@@ -355,6 +434,7 @@ export function AdminDashboard() {
                     type="date"
                     value={newTourist.endDate}
                     onChange={(e) => setNewTourist({...newTourist, endDate: e.target.value})}
+                    min={newTourist.startDate || new Date().toISOString().split('T')[0]}
                     className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
                   />
                 </div>
@@ -426,7 +506,7 @@ export function AdminDashboard() {
               <button
                 onClick={handleAddTourist}
                 className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-                disabled={!newTourist.name || !newTourist.phone || !newTourist.nationality}
+                disabled={!newTourist.name || !newTourist.email || !newTourist.phone || !newTourist.nationality || !newTourist.startDate || !newTourist.endDate}
               >
                 Create Tourist ID
               </button>
